@@ -1,10 +1,8 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-Assets/TextMesh Pro/Shaders/*.shader linguist-vendored
-Assets/TextMesh Pro/Shaders/**/* linguist-vendored
-Assets/TextMesh Pro/Shaders/**/*.shader linguist-vendored
-
-git add .gitattributes
-git commit --allow-empty -m "Force GitHub language detection refresh"
-git push
+*.shader linguist-vendored
+*.cginc linguist-vendored
+*.hlsl linguist-vendored
+*.glsl linguist-vendored
+*.compute linguist-vendored
