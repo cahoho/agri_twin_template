@@ -19,7 +19,8 @@
 
 - 本项目使用免费素材[City package](https://assetstore.unity.com/packages/3d/environments/urban/city-package-107224) 和 [Low-Poly Simple Nature Pack](https://assetstore.unity.com/packages/3d/environments/landscapes/low-poly-simple-nature-pack-162153) 
 - 本项目使用付费素材 **Data Visualization UI Pack** 作为核心UI组件，请从 [Unity Asset Store](https://assetstore.unity.com/packages/2d/gui/data-visualization-ui-pack-193179) 购买（$29.9）
-- 安装好所有素材后，将以上所有素材导入到 `Assets/proprietary/` 文件夹即可正常使用项目。
+- 安装好所有素材后，将以上所有素材导入到 `Assets/proprietary/` 文件夹。
+- 请自行手动修改所有material的shader，将其改为Urp-lit。
 
 ## 🏠架构说明
 
