@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+<!--！！！！！！！！！！！！！！！！！！！！！！定位 860行！！！！！！！！！！！！！！！！！！！-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图表管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px; /* 按钮之间增加间距 */
+            margin-bottom: 20px;
+            padding: 10px 0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #3a5bd9;
+        }
+
+        .btn:disabled {
+            background-color: #a0b2f7;
+            cursor: not-allowed;
+        }
+        
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .empty-table {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            border-color: #4a6cf7;
+            outline: none;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .data-id {
+            font-family: monospace;
+            color: #4a6cf7;
+            font-size: 12px;
+            margin-top: 5px;
+            word-break: break-all; /* 防止长ID溢出 */
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: #4a6cf7;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px; /* 按钮间距 */
+        }
+        
+        .action-btn.delete-btn { /* 删除按钮的特殊颜色 */
+            color: #dc3545;
+        }
+
+        .action-btn.delete-btn:hover {
+            color: #c82333;
+        }
+        
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+        
+        /* 可展开行样式 */
+        .chart-title {
+            color: #4a6cf7;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chart-title:hover {
+            text-decoration: underline;
+        }
+        
+        .chart-title::before {
+            content: "▶";
+            margin-right: 8px;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .chart-title.expanded::before {
+            transform: rotate(90deg);
+        }
+        
+        .data-row {
+            background-color: #f8f9fa;
+        }
+        
+        .data-row td {
+            padding: 10px 15px 10px 40px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .data-header {
+            background-color: #f0f2f5;
+            font-weight: 500;
+        }
+        
+        .no-data {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* 新增的通知消息样式 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4a6cf7; /* 默认蓝色，可根据类型覆盖 */
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001; /* 确保在所有弹窗之上 */
+            opacity: 0; /* 默认隐藏 */
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            transform: translateY(-20px); /* 初始位置略高，用于动画效果 */
+            font-size: 14px;
+        }
+
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0); /* 动画到正常位置 */
+        }
+
+        .notification.success {
+            background-color: #28a745; /* 成功绿色 */
+        }
+
+        .notification.error {
+            background-color: #dc3545; /* 错误红色 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="btn" id="newChartBtn">新建图表</button>
+            <!-- 移除了更新客户端按钮 -->
+        </div>
+        
+        <div class="table-container">
+            <table id="chartsTable">
+                <thead>
+                    <tr>
+                        <th width="20%">图表标题</th>
+                        <th width="12%">图表类型</th>
+                        <th width="12%">图表位置</th>
+                        <th width="12%">详细位置</th>
+                        <th width="10%">最大值</th>
+                        <th width="15%">图表ID</th>
+                        <th width="19%">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="chartsTableBody">
+                    <tr class="empty-table">
+                        <td colspan="7">暂无图表数据，点击"新建图表"按钮添加</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="modal" id="chartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">新建图表</div>
+                <button class="close-btn" id="closeChartModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="chartType">图表类型</label>
+                    <select class="form-control" id="chartType">
+                        <option value="">请选择图表类型</option>
+                        <option value="bar">柱状图</option>
+                        <option value="line">折线图</option>
+                        <option value="pie">饼图</option>
+                        <option value="area">面积图</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="chartLocation">图表位置</label>
+                        <select class="form-control" id="chartLocation">
+                            <option value="">请选择图表位置</option>
+                            <option value="main">主界面</option>
+                            <option value="weather">天气面板</option>
+                            <option value="pest">虫情检测</option>
+                            <option value="monitor">监控面板</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="detailLocation">详细位置</label>
+                        <select class="form-control" id="detailLocation">
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="chartTitle">图表标题</label>
+                    <input type="text" class="form-control" id="chartTitle" placeholder="请输入图表标题">
+                </div>
+                
+                <div class="form-group">
+                    <label for="maxValue">数据最大值（可选）</label>
+                    <input type="number" class="form-control" id="maxValue" placeholder="请输入数据最大值">
+                </div>
+                
+                <div class="form-group">
+                    <label>图表ID</label>
+                    <div class="data-id" id="chartIdDisplay">等待生成...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelChart">取消</button>
+                <button class="btn" id="confirmChart">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="dataModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">新建数据</div>
+                <button class="close-btn" id="closeDataModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="dataTitle">数据标题</label>
+                    <input type="text" class="form-control" id="dataTitle" placeholder="请输入数据标题">
+                </div>
+                
+                <div class="form-group">
+                    <label for="dataValue">数值</label>
+                    <input type="number" class="form-control" id="dataValue" placeholder="请输入数值">
+                </div>
+                
+                <div class="form-group">
+                    <label>数据ID</label>
+                    <div class="data-id" id="dataIdDisplay">等待生成...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelData">取消</button>
+                <button class="btn" id="confirmData">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+        ws.onopen = () => {
+            console.log('WebSocket 连接成功');
+        };
+        ws.onmessage = (event) => {
+            console.log('收到服务器消息:', event.data);
+        };
+        ws.onerror = (error) => {
+            console.error('WebSocket 错误:', error);
+        };
+        ws.onclose = () => {
+            console.log('WebSocket 连接已关闭');
+        };
+
+// -----------------------------------重要！！！！！！！发送给服务器的：----------------------------------------------
+        function sendWebSocketMessage(actionType, id, payload = null) {
+            let message = { 
+                action_type: actionType, 
+                id: id
+            };
+
+            if (payload && typeof payload === 'object') {
+                message = { ...message, ...payload }; 
+            }
+
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(message));
+                console.log(`Sent WebSocket message: ${JSON.stringify(message)}`);
+            } else {
+                console.warn('WebSocket is not open. Message not sent:', message);
+            }
+        }
+
+
+
+        // 全局变量
+        let chartCounter = 1; // 用于生成图表ID的计数器
+        let dataCounter = 1;  // 用于生成数据ID的计数器
+        let currentChartId = null; // 当前正在操作的图表ID
+
+        // chartsData: 存储从文件加载的已保存状态
+        let chartsData = {}; 
+        // pendingChartsData: 存储用户在界面上操作后尚未保存的临时状态
+        let pendingChartsData = {};
+        // 移除了 hasUnsavedChanges 变量
+        
+        // DOM元素
+        const newChartBtn = document.getElementById('newChartBtn');
+        // 移除了 saveAllBtn
+        const chartModal = document.getElementById('chartModal');
+        const closeChartModal = document.getElementById('closeChartModal');
+        const cancelChart = document.getElementById('cancelChart');
+        const confirmChart = document.getElementById('confirmChart');
+        const chartsTableBody = document.getElementById('chartsTableBody');
+        const chartLocation = document.getElementById('chartLocation');
+        const detailLocation = document.getElementById('detailLocation');
+        const chartIdDisplay = document.getElementById('chartIdDisplay');
+        const dataModal = document.getElementById('dataModal');
+        const closeDataModal = document.getElementById('closeDataModal');
+        const cancelData = document.getElementById('cancelData');
+        const confirmData = document.getElementById('confirmData');
+        const dataIdDisplay = document.getElementById('dataIdDisplay');
+        const notificationElement = document.getElementById('notification'); // 获取通知元素
+        
+        // 图表位置选项映射
+        const locationOptions = {
+            'main': ['general'],
+            'weather': ['general', '气象站A', '气象站B'],
+            'pest': ['general', '虫情灯A', '虫情灯B'],
+            'monitor': ['general', '监控A', '监控B']
+        };
+        
+        // 事件监听
+        newChartBtn.addEventListener('click', () => {
+            chartModal.style.display = 'flex';
+            generateChartId();
+        });
+
+        // 移除了 saveAllBtn 的事件监听
+        
+        closeChartModal.addEventListener('click', () => {
+            chartModal.style.display = 'none';
+            resetChartForm();
+        });
+        
+        cancelChart.addEventListener('click', () => {
+            chartModal.style.display = 'none';
+            resetChartForm();
+        });
+        
+        confirmChart.addEventListener('click', () => {
+            const chartType = document.getElementById('chartType').value;
+            const chartLoc = document.getElementById('chartLocation').value;
+            const detailLoc = document.getElementById('detailLocation').value;
+            const chartTitle = document.getElementById('chartTitle').value;
+            const maxValue = document.getElementById('maxValue').value;
+            
+            if (!chartType || !chartLoc || !chartTitle) {
+                alert('请填写必填字段');
+                return;
+            }
+            
+            const chartId = chartIdDisplay.textContent;
+            let eventuallyDetail = detailLoc;
+            if (detailLoc === 'general' && chartLoc !== '') {
+                eventuallyDetail = `${chartLoc}_general`;
+            }
+            // 存储图表属性到 pendingChartsData
+            const newChartData = {
+                properties: {
+                    id: chartId,
+                    title: chartTitle,
+                    type: chartType,
+                    location: chartLoc,
+                    detail: eventuallyDetail,
+                    maxValue: maxValue
+                },
+                data: []
+            };
+            pendingChartsData[chartId] = newChartData;
+            
+            // --- 发送 create 类型的 WebSocket 消息 ---
+            // 注意：这里发送的是图表本身的属性，不包含其内部数据点
+            sendWebSocketMessage('create_chart', chartId, newChartData.properties);
+
+            renderAllCharts(); // 重新渲染所有图表，包括新增的
+            chartModal.style.display = 'none';
+            resetChartForm();
+            
+            // 自动保存
+            chartsData = JSON.parse(JSON.stringify(pendingChartsData)); // 将当前临时状态复制到chartsData
+            saveChartsState(); // 调用保存函数
+        });
+        
+        chartLocation.addEventListener('change', () => {
+            updateDetailLocationOptions();
+        });
+        
+        closeDataModal.addEventListener('click', () => {
+            dataModal.style.display = 'none';
+            resetDataForm();
+        });
+        
+        cancelData.addEventListener('click', () => {
+            dataModal.style.display = 'none';
+            resetDataForm();
+        });
+        
+        confirmData.addEventListener('click', () => {
+            const dataTitle = document.getElementById('dataTitle').value;
+            const dataValue = document.getElementById('dataValue').value;
+            const dataId = dataIdDisplay.textContent;
+            
+            if (!dataTitle || dataValue === '') {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            // 保存数据到当前图表的 pendingChartsData
+            if (currentChartId && pendingChartsData[currentChartId]) {
+                const newDataEntry = {
+                    id: dataId,
+                    title: dataTitle,
+                    value: dataValue
+                };
+                pendingChartsData[currentChartId].data.push(newDataEntry);
+                
+                // --- 获取父图表类型并发送 create 类型的 WebSocket 消息 ---
+                const parentChartType = pendingChartsData[currentChartId].properties.type;
+                sendWebSocketMessage('create_data', dataId, {
+                    parentId: currentChartId, // 关联到父图表ID
+                    parentChartType: parentChartType, // 新增：父图表类型
+                    ...newDataEntry
+                });
+                
+                updateChartDataDisplay(currentChartId); // 更新表格显示
+            }
+            
+            dataModal.style.display = 'none';
+            resetDataForm();
+
+            // 自动保存
+            chartsData = JSON.parse(JSON.stringify(pendingChartsData)); // 将当前临时状态复制到chartsData
+            saveChartsState(); // 调用保存函数
+        });
+        
+        // 函数定义
+
+        // 显示通知消息
+        function showNotification(message, type = 'success') {
+            notificationElement.textContent = message;
+            notificationElement.classList.remove('success', 'error'); // 移除之前的类型
+            notificationElement.classList.add(type); // 添加当前类型
+            notificationElement.classList.add('show'); // 显示通知
+
+            setTimeout(() => {
+                notificationElement.classList.remove('show'); // 3秒后隐藏
+            }, 3000);
+        }
+
+        // 生成图表ID
+        function generateChartId() {
+            const id = `chart_${Date.now()}_${chartCounter}`;
+            chartIdDisplay.textContent = id;
+            currentChartId = id; // 每次生成新图表ID时更新 currentChartId
+            chartCounter++;
+        }
+        
+        // 生成数据ID
+        function generateDataId() {
+            const id = `data_${Date.now()}_${dataCounter}`;
+            dataIdDisplay.textContent = id;
+            dataCounter++;
+        }
+        
+        // 根据图表位置更新详细位置选项
+        function updateDetailLocationOptions() {
+            const selectedLocation = chartLocation.value;
+            const options = locationOptions[selectedLocation] || ['general'];
+            
+            detailLocation.innerHTML = ''; // 清空现有选项
+            
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.textContent = option;
+                detailLocation.appendChild(optionElement);
+            });
+        }
+        
+        // 将图表添加到表格中 (从 pendingChartsData 获取数据)
+        function addChartToTable(chartId) {
+            const chart = pendingChartsData[chartId].properties; // 从临时状态获取图表属性
+            
+            const newRow = document.createElement('tr');
+            newRow.dataset.chartId = chart.id;
+            newRow.innerHTML = `
+                <td>
+                    <div class="chart-title">${chart.title}</div>
+                </td>
+                <td>${getChartTypeName(chart.type)}</td>
+                <td>${getLocationName(chart.location)}</td>
+                <td>${getDetailLocationDisplayName(chart.detail)}</td>
+                <td>${chart.maxValue || '-'}</td>
+                <td class="data-id">${chart.id}</td>
+                <td>
+                    <button class="action-btn new-data-btn">新建数据</button>
+                    <button class="action-btn delete-btn delete-chart-btn">删除</button>
+                </td>
+            `;
+            
+            newRow.querySelector('.new-data-btn').addEventListener('click', (event) => {
+                event.stopPropagation();
+                currentChartId = chart.id; // 确保 currentChartId 正确
+                dataModal.style.display = 'flex';
+                generateDataId();
+            });
+
+            newRow.querySelector('.delete-chart-btn').addEventListener('click', (event) => {
+                event.stopPropagation();
+                deleteChart(chart.id);
+            });
+            
+            newRow.querySelector('.chart-title').addEventListener('click', function() {
+                toggleChartData(chart.id, this);
+            });
+            
+            chartsTableBody.appendChild(newRow);
+        }
+
+        // 删除图表及其所有数据 (修改 pendingChartsData)
+        function deleteChart(chartId) {
+            if (!confirm('确定要删除此图表及其所有数据吗？')) {
+                return;
+            }
+
+            // 操作类型:delete!!!!!!
+            sendWebSocketMessage('delete_chart', chartId);
+
+            // 从 pendingChartsData 中移除
+            delete pendingChartsData[chartId];
+
+            renderAllCharts(); // 重新渲染所有图表
+            showNotification('图表删除成功！', 'success'); // 删除成功提示
+
+            // 自动保存
+            chartsData = JSON.parse(JSON.stringify(pendingChartsData)); // 将当前临时状态复制到chartsData
+            saveChartsState(); // 调用保存函数
+        }
+
+        // 检查并显示/隐藏空表格提示
+        function checkEmptyTable() {
+            const emptyRow = chartsTableBody.querySelector('.empty-table');
+            if (Object.keys(pendingChartsData).length === 0) { // 检查 pendingChartsData
+                if (!emptyRow) {
+                    const newEmptyRow = document.createElement('tr');
+                    newEmptyRow.className = 'empty-table';
+                    newEmptyRow.innerHTML = '<td colspan="7">暂无图表数据，点击"新建图表"按钮添加</td>';
+                    chartsTableBody.appendChild(newEmptyRow);
+                }
+            } else {
+                if (emptyRow) {
+                    chartsTableBody.removeChild(emptyRow);
+                }
+            }
+        }
+        
+        // 展开/折叠图表数据行
+        function toggleChartData(chartId, titleElement) {
+            const existingDataRows = document.querySelectorAll(`[data-parent-chart="${chartId}"]`);
+            
+            if (existingDataRows.length > 0) {
+                existingDataRows.forEach(row => row.remove());
+                titleElement.classList.remove('expanded');
+            } else {
+                showChartData(chartId);
+                titleElement.classList.add('expanded');
+            }
+        }
+        
+        // 显示图表下的所有数据 (从 pendingChartsData 获取数据)
+        function showChartData(chartId) {
+            const chartRow = document.querySelector(`[data-chart-id="${chartId}"]`);
+            const data = pendingChartsData[chartId].data || []; // 从临时状态获取数据
+            
+            const headerRow = document.createElement('tr');
+            headerRow.className = 'data-row data-header';
+            headerRow.dataset.parentChart = chartId;
+            headerRow.innerHTML = `
+                <td colspan="2"><strong>数据标题</strong></td>
+                <td><strong>数值</strong></td>
+                <td><strong>数据ID</strong></td>
+                <td colspan="3"><strong>操作</strong></td>
+            `;
+            
+            chartRow.after(headerRow);
+            
+            if (data.length === 0) {
+                const noDataRow = document.createElement('tr');
+                noDataRow.className = 'data-row no-data-message';
+                noDataRow.dataset.parentChart = chartId;
+                noDataRow.innerHTML = `
+                    <td colspan="7" class="no-data">
+                        暂无数据，点击"新建数据"按钮添加
+                    </td>
+                `;
+                headerRow.after(noDataRow);
+            } else {
+                data.sort((a, b) => a.id.localeCompare(b.id));
+
+                data.forEach(item => {
+                    const dataRow = document.createElement('tr');
+                    dataRow.className = 'data-row';
+                    dataRow.dataset.parentChart = chartId;
+                    dataRow.dataset.dataId = item.id;
+                    dataRow.innerHTML = `
+                        <td colspan="2">${item.title}</td>
+                        <td>${item.value}</td>
+                        <td class="data-id">${item.id}</td>
+                        <td colspan="3">
+                            <button class="action-btn delete-btn delete-data-btn">删除</button>
+                        </td>
+                    `;
+                    headerRow.after(dataRow);
+
+                    dataRow.querySelector('.delete-data-btn').addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        deleteDataEntry(chartId, item.id);
+                    });
+                });
+            }
+        }
+
+        // 删除单条数据项 (修改 pendingChartsData)
+        function deleteDataEntry(chartId, dataId) {
+            if (!confirm('确定要删除此数据项吗？')) {
+                return;
+            }
+
+            if (pendingChartsData[chartId]) {
+                pendingChartsData[chartId].data = pendingChartsData[chartId].data.filter(item => item.id !== dataId);
+                
+                // 操作类型：delete！！！！！
+                sendWebSocketMessage('delete_data', dataId, { parentId: chartId });
+
+                updateChartDataDisplay(chartId); // 更新表格显示
+            }
+            showNotification('数据项删除成功！', 'success'); // 删除成功提示
+
+            // 自动保存
+            chartsData = JSON.parse(JSON.stringify(pendingChartsData)); // 将当前临时状态复制到chartsData
+            saveChartsState(); // 调用保存函数
+        }
+        
+        // 更新图表数据在DOM中的显示
+        function updateChartDataDisplay(chartId) {
+            const chartTitleElement = document.querySelector(`[data-chart-id="${chartId}"] .chart-title`);
+            if (chartTitleElement && chartTitleElement.classList.contains('expanded')) {
+                const existingDataRows = document.querySelectorAll(`[data-parent-chart="${chartId}"]`);
+                existingDataRows.forEach(row => row.remove());
+                
+                showChartData(chartId); // 重新显示数据
+            }
+        }
+        
+        // 获取图表类型名称
+        function getChartTypeName(type) {
+            const typeMap = {
+                'bar': '柱状图',
+                'line': '折线图',
+                'pie': '饼图',
+                'area': '面积图'
+                
+            };
+            return typeMap[type] || type;
+        }
+        
+        // 获取图表位置名称
+        function getLocationName(location) {
+            const locationMap = {
+                'main': '主界面',
+                'weather': '天气面板',
+                'pest': '虫情检测',
+                'monitor': '监控面板'
+            };
+            return locationMap[location] || location;
+        }
+         function getDetailLocationDisplayName(detailValue) {
+            // 如果是以 '_general' 结尾的，显示为 'General'
+            if (typeof detailValue === 'string' && detailValue.endsWith('_general')) {
+                return 'General';
+            }
+            // 否则，显示原始值
+            return detailValue;
+        }
+        // 重置新建图表表单
+        function resetChartForm() {
+            document.getElementById('chartType').value = '';
+            document.getElementById('chartLocation').value = '';
+            detailLocation.innerHTML = '<option value="general">General</option>';
+            document.getElementById('chartTitle').value = '';
+            document.getElementById('maxValue').value = '';
+            chartIdDisplay.textContent = '等待生成...';
+        }
+        
+        // 重置新建数据表单
+        function resetDataForm() {
+            document.getElementById('dataTitle').value = '';
+            document.getElementById('dataValue').value = '';
+            dataIdDisplay.textContent = '等待生成...';
+        }
+
+        /**
+         * 持久化相关函数
+         */
+
+        // 移除了 handleSaveAll 函数，因为不再需要手动触发保存
+        
+        function saveChartsState() {
+            console.log('Saving charts data:', chartsData); // 调试日志
+            
+            fetch('api/save_charts_state.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(chartsData) // 确保这里发送的是 chartsData
+                
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Save response:', data); // 调试日志
+                if (data.success) {
+                    showNotification('保存成功！客户端已更新。', 'success'); // 使用 Toast 提示
+                    console.log('Charts state saved successfully:', data.message);
+                } else {
+                    console.error('Failed to save charts state:', data.message, data.error);
+                    showNotification('保存失败：' + (data.message || '未知错误'), 'error'); // 使用 Toast 提示
+                }
+            })
+            .catch(error => {
+                console.error('Error saving charts state:', error);
+                showNotification('保存失败：网络错误', 'error'); // 使用 Toast 提示
+            });
+        }
+        function loadChartsState() {
+            fetch('api/load_charts_state.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    // 确保加载的数据是对象，不是数组
+                    if (Array.isArray(data.data)) {
+                        console.warn('Loaded data is array, converting to object');
+                        chartsData = {};
+                    } else {
+                        chartsData = data.data; // 加载已保存的状态
+                    }
+                    pendingChartsData = JSON.parse(JSON.stringify(chartsData)); // 复制到临时状态
+                    console.log('Charts state loaded successfully:', chartsData);
+                    renderAllCharts(); // 渲染所有加载的图表 (基于 pendingChartsData)
+                    updateCounters(); // 更新计数器以避免ID冲突
+                } else {
+                    console.warn('No saved charts state found or failed to load:', data.message);
+                    chartsData = {};
+                    pendingChartsData = {}; // 初始化为空对象
+                }
+                checkEmptyTable(); // 始终检查空表格状态
+                // 移除了 setUnsavedChanges(false)
+            })
+            .catch(error => {
+                console.error('Error loading charts state:', error);
+                chartsData = {};
+                pendingChartsData = {}; // 初始化为空对象
+                checkEmptyTable(); // 即使加载失败也要检查空表格状态
+                // 移除了 setUnsavedChanges(false)
+            });
+        }
+
+        // 渲染所有图表 (基于 pendingChartsData)
+        function renderAllCharts() {
+            chartsTableBody.innerHTML = ''; // 清空表格内容
+
+            for (const chartId in pendingChartsData) { // 遍历 pendingChartsData
+                if (pendingChartsData.hasOwnProperty(chartId)) {
+                    addChartToTable(chartId); // 重新添加每个图表
+                }
+            }
+            checkEmptyTable(); // 重新检查空表格状态
+        }
+
+        // 更新计数器，确保新生成的ID不会与已加载的ID冲突
+        function updateCounters() {
+            let maxChartNum = 0;
+            let maxDataNum = 0;
+            for (const chartId in chartsData) { // 遍历已保存的 chartsData 来确定最大计数器
+                if (chartsData.hasOwnProperty(chartId)) {
+                    const chartNumMatch = chartId.match(/chart_\d+_(\d+)/);
+                    if (chartNumMatch) {
+                        maxChartNum = Math.max(maxChartNum, parseInt(chartNumMatch[1]));
+                    }
+                    chartsData[chartId].data.forEach(dataEntry => {
+                        const dataNumMatch = dataEntry.id.match(/data_\d+_(\d+)/);
+                        if (dataNumMatch) {
+                            maxDataNum = Math.max(maxDataNum, parseInt(dataNumMatch[1]));
+                        }
+                    });
+                }
+            }
+            chartCounter = maxChartNum + 1;
+            dataCounter = maxDataNum + 1;
+            console.log(`Counters updated: chartCounter=${chartCounter}, dataCounter=${dataCounter}`);
+        }
+
+        // 移除了 setUnsavedChanges 函数
+
+        // 页面加载完成后，尝试加载保存的状态
+        document.addEventListener('DOMContentLoaded', loadChartsState);
+
+        // 移除了离开页面前提醒用户保存的事件监听
+    </script>
+</body>
+</html>
