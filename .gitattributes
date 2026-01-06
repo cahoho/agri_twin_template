@@ -4,3 +4,7 @@
 Assets/TextMesh Pro/Shaders/*.shader linguist-vendored
 Assets/TextMesh Pro/Shaders/**/* linguist-vendored
 Assets/TextMesh Pro/Shaders/**/*.shader linguist-vendored
+
+git add .gitattributes
+git commit --allow-empty -m "Force GitHub language detection refresh"
+git push
