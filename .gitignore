@@ -1,0 +1,168 @@
+# =============== #
+# Unity 生成的文件夹 #
+# =============== #
+[Ll]ibrary/           # Unity 库文件夹（自动生成，最大）
+[Tt]emp/              # 临时文件
+[Oo]bj/               # 编译对象文件
+[Bb]uild/             # 构建输出
+[Bb]uilds/            # 构建输出（多个）
+[Ll]ogs/              # 日志文件
+[Uu]ser[Ss]ettings/   # 用户设置
+
+# ===================== #
+# Visual Studio / Rider #
+# ===================== #
+.vs/
+*.userprefs
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userosscache
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+
+# ================= #
+# OS 生成的文件夹/文件 #
+# ================= #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ================== #
+# Unity 特定文件类型 #
+# ================== #
+*.tmp
+*.orig
+*.bak
+*.unityproj
+*.mat
+*.asset
+*.meta
+*.prefab
+*.unity
+*.cubemap
+*.flare
+*.physicmaterial
+*.asset.meta
+*.prefab.meta
+
+# =========== #
+# 构建输出文件 #
+# =========== #
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.exe
+*.dll
+
+# ================== #
+# 崩溃报告和缓存文件 #
+# ================== #
+sysinfo.txt
+Assets/AssetStoreTools*
+*.pidb.meta
+*.pdb.meta
+
+# ================ #
+# 自动生成的文件夹 #
+# ================ #
+ProjectSettings/ProjectSettings.asset
+ProjectSettings/ProjectSettings.asset.meta
+
+# ==================== #
+# 特别注意：保留 jslib 文件 #
+# ==================== #
+# 以下规则确保 jslib 文件不被忽略
+!*.jslib
+!**/*.jslib
+
+# ================================ #
+# 付费素材文件夹 - 不要上传到 GitHub #
+# ================================ #
+# 排除 proprietary 文件夹下的 Multiple Data Visualization Resources
+Assets/proprietary/Multiple Data Visualization Resources/
+Assets/proprietary/Multiple_Data_Visualization_Resources/
+Assets/proprietary/Multiple-Data-Visualization-Resources/
+
+# 安全起见，排除整个 proprietary 文件夹（但可以通过 ! 规则保留特定文件）
+Assets/proprietary/
+# 如果需要保留 proprietary 文件夹中的某些文件，可以这样：
+# !Assets/proprietary/README.md
+# !Assets/proprietary/.gitkeep
+
+# ========================== #
+# 特定的文件夹和文件保留规则 #
+# ========================== #
+# 保留 Assets 和 ProjectSettings 文件夹
+!Assets/
+!ProjectSettings/
+!Packages/
+
+# 保留 Assets 文件夹下的所有内容（除了明确排除的）
+!Assets/**/*
+# 但排除 Assets 文件夹中的一些临时文件
+Assets/**/*.tmp
+Assets/**/*.bak
+Assets/**/*.orig
+
+# ============== #
+# 其他开发工具 #
+# ============== #
+# VS Code
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains Rider
+.idea/
+*.iws
+
+# ============== #
+# 包管理文件夹 #
+# ============== #
+# 如果你使用 UPM 包管理，这些是自动生成的
+Packages/packages-lock.json
+
+# ============== #
+# 性能分析文件 #
+# ============== #
+*.cpuprofile
+
+# ======================== #
+# 构建缓存和中间文件 #
+# ======================== #
+# Unity 2020+ 的 Burst 编译缓存
+[Bb]urstCache/
+
+# Unity 可寻址资源系统缓存
+[Aa]ddressableAssetsData/*.bin*
+[Aa]ddressableAssetsData/*.hash*
+
+# Shader 编译缓存
+[Ll]ibrary/ShaderCache/
+
+# ======================== #
+# 特定项目的自定义排除规则 #
+# ======================== #
+# 如果有其他需要排除的文件夹，在这里添加
+# 例如：Assets/OtherPaidAssets/
+Assets/proprietary/Multiple Data Visualization Resources/
+Assets/proprietary/POLYGON city pack/
+Assets/proprietary/SimpleNaturePack
+Library/
+Temp/
+Logs/

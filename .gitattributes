@@ -1,0 +1,6 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+Assets/TextMesh Pro/Shaders/*.shader linguist-vendored
+Assets/TextMesh Pro/Shaders/**/* linguist-vendored
+Assets/TextMesh Pro/Shaders/**/*.shader linguist-vendored
