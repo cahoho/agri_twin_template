@@ -1,6 +1,6 @@
 # 🌱 Agriculture Twin Template - 农业数字孪生大数据可视化平台
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![Unity Version](https://img.shields.io/badge/Unity-2022.3.10-blue.svg)](https://unity.com/)[![Node.js Version](https://img.shields.io/badge/Nodejs-v24.11.0-purple.svg)](https://nodejs.org/en) [![Platform](https://img.shields.io/badge/Platform-WebGL-success)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br>[![Unity Version](https://img.shields.io/badge/Unity-2022.3.10-blue.svg)](https://unity.com/)<br>[![Node.js Version](https://img.shields.io/badge/Nodejs-v24.11.0-purple.svg)](https://nodejs.org/en)<br>[![Platform](https://img.shields.io/badge/Platform-WebGL-success)]()
 
 ## 📖 项目简介
 
